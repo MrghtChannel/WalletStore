@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo1.png') }}" />
+    <title>WalletStore - Магазин додатків</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .btn_wrapper {
+            margin: 20px;
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+
+        .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn i {
+            margin-left: 10px;
+        }
+
+        .os_list {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .os_list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .os_list li {
+            margin: 5px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .btn_wrapper {
+                display: flex;
+                flex-direction: column;
+            }
+        }
+
+        .user-panel {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .user-panel span {
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+        }
+
+        .panel-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #fff;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .panel-dropdown a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .panel-dropdown a:hover {
+            background-color: #ddd;
+        }
+
+        .user-panel:hover .panel-dropdown {
+            display: block;
+        }
+    </style>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet" />
+
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+</head>
+<body>
+    <header class="container header">
+
+        <nav class="nav">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" width="40" height="40" class="logo"/>
+                <h2>WalletStore</h2>
+            </div>
+            <div class="nav_menu" id="nav_menu">
+                <button class="close_btn" id="close_btn">
+                    <i class="ri-close-fill"></i>
+                </button>
+                <ul class="nav_menu_list">
+                    <li class="nav_menu_item">
+                        <a href="/" class="nav_menu_link">Головна</a>
+                    </li>
+                    <li class="nav_menu_item">
+                        <a href="https://docs.walletstore.github.io" class="nav_menu_link">Документація</a>
+                    </li>
+                    <li class="nav_menu_item">
+                        <a href="/store" class="nav_menu_link">Додатки</a>
+                    </li>
+                    <li class="nav_menu_item">
+                        {% if session.get('discord_user') %}
+                            <div class="user-panel">
+                                <span>{{ session['discord_user']['username'] }}</span>
+                                <div class="panel-dropdown">
+                                    <a href="{{ url_for('profile') }}">Кабінет</a>
+                                    <a href="{{ url_for('logout') }}">Вийти</a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <a href="{{ url_for('login') }}" class="btn view_more_btn">Увійти</a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+            <button class="toggle_btn" id="toggle_btn">
+                <i class="ri-menu-line"></i>
+            </button>
+        </nav>
+    </header>
+    <section class="container mt-5">
+        <h2>Налаштування</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="username">Нікнейм</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Ваш нікнейм" value="{{ user.username }}" required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="banner">Оформлення (банер)</label>
+                        <input type="file" class="form-control-file" id="banner" name="banner" accept="image/*"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="icon">Оформлення (іконка)</label>
+                        <input type="file" class="form-control-file" id="icon" name="icon" accept="image/*"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="website">Сайт</label>
+                        <input type="url" class="form-control" id="website" name="website" placeholder="https://example.com" value="{{ user_data.website }}"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="xcom">X.com</label>
+                        <input type="url" class="form-control" id="xcom" name="xcom" placeholder="https://x.com" value="{{ user_data.xcom }}"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mastodon">Mastodon</label>
+                        <input type="url" class="form-control" id="mastodon" name="mastodon" placeholder="https://mastodon.social" value="{{ user_data.mastodon }}"/>
+                    </div>
+
+
+                    <button type="submit" class="btn btn-primary">Зберегти</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <div class="user-details">
+                    <p><strong>Банер:</strong></p>
+                    {% if user_data.banner %}
+                        <img src="{{ url_for('static', filename='store/img/' ~ user_data.banner) }}" alt="Банер" class="img-fluid"/>
+                    {% else %}
+                        <p>Банер не встановлено</p>
+                    {% endif %}
+                    <p><strong>Іконка:</strong></p>
+                    {% if user_data.icon %}
+                        <img src="{{ url_for('static', filename='store/img/' ~ user_data.icon) }}" alt="Іконка" class="img-fluid"/>
+                    {% else %}
+                        <img src="{{ url_for('static', filename='store/img/' ~ DEFAULT_AVATAR) }}" alt="Іконка за замовчуванням" class="img-fluid"/>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/gsap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

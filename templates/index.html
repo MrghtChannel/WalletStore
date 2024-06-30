@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo1.png') }}" />
+    <title>WalletStore - Магазин додатків</title>
+    <style>
+        .btn_wrapper {
+            margin: 20px;
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+
+        .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn i {
+            margin-left: 10px;
+        }
+
+        .os_list {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .os_list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .os_list li {
+            margin: 5px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .btn_wrapper {
+                display: flex;
+                flex-direction: column; 
+            }
+        }
+
+        .user-panel {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .user-panel span {
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+        }
+
+        .panel-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #fff;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .panel-dropdown a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .panel-dropdown a:hover {
+            background-color: #ddd;
+        }
+
+        .user-panel:hover .panel-dropdown {
+            display: block;
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+</head>
+<body>
+    <header class="container header">
+        <nav class="nav">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='img/logo1.png') }}" width="40" height="40" class="logo"/>
+                <h2>WalletStore</h2>
+            </div>
+            <div class="nav_menu" id="nav_menu">
+                <button class="close_btn" id="close_btn">
+                    <i class="ri-close-fill"></i>
+                </button>
+                <ul class="nav_menu_list">
+                    <li class="nav_menu_item">
+                        <a href="/" class="nav_menu_link">Головна</a>
+                    </li>
+                    <li class="nav_menu_item">
+                        <a href="/wiki" class="nav_menu_link">Документація</a>
+                    </li>
+                    <li class="nav_menu_item">
+                        <a href="/store" class="nav_menu_link">Додатки</a>
+                    </li>
+                    <li class="nav_menu_item">
+                        {% if session.get('discord_user') %}
+                            <div class="user-panel">
+                                <span>{{ session['discord_user']['username'] }}</span>
+                                <div class="panel-dropdown">
+                                    <a href="{{ url_for('profile') }}">Кабінет</a>
+                                    <a href="{{ url_for('logout') }}">Вийти</a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <a href="{{ url_for('login') }}" class="btn view_more_btn">Увійти</a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+            <button class="toggle_btn" id="toggle_btn">
+                <i class="ri-menu-line"></i>
+            </button>
+        </nav>
+    </header>
+
+    <section class="wrapper">
+        <div class="container">
+            <div class="grid-cols-2">
+                <div class="grid-item-1">
+                    <h1 class="main-heading">
+                        Магазин додатків <span>WalletStore</span>
+                        <br />
+                        з відкритим кодом.
+                    </h1>
+                    <p class="info-text">
+                        Для Mac OS, Linux, Windows, iOS, Android.
+                    </p>
+
+                    <div class="btn_wrapper">
+                        <a href="/download">
+                            <button class="btn view_more_btn">
+                                Завантажити <i class="ri-arrow-right-s-line"></i>
+                            </button>
+                        </a>
+                    </div>
+                </div>
+                <div class="grid-item-2">
+                    <div class="team_img_wrapper">
+                        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="team-img" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/gsap.min.js"></script>
+</body>
+</html>

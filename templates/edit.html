@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo1.png') }}" />
+    <title>WalletStore - Редагування додатку</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <style>
+    .btn_wrapper {
+            margin: 20px;
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+
+        .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%; 
+        }
+
+        .btn i {
+            margin-left: 10px;
+        }
+
+        .os_list {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .os_list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .os_list li {
+            margin: 5px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .btn_wrapper {
+                display: flex;
+                flex-direction: column; 
+            }
+        }
+
+        .user-panel {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .user-panel span {
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+        }
+
+        .panel-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #fff;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .panel-dropdown a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .panel-dropdown a:hover {
+            background-color: #ddd;
+        }
+
+        .user-panel:hover .panel-dropdown {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header class="container header">
+        <nav class="nav">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='img/logo1.png') }}" width="40" height="40" class="logo"/>
+                <h2>WalletStore</h2>
+            </div>
+            <div class="nav_menu" id="nav_menu">
+                <button class="close_btn" id="close_btn">
+                    <i class="ri-close-fill"></i>
+                </button>
+                <ul class="nav_menu_list">
+                    <li class="nav_menu_item">
+                        <a href="/" class="nav_menu_link">Головна</a>
+                    </li>
+                    <li class="nav_menu_item">
+                        <a href="/wiki" class="nav_menu_link">Документація</a>
+                    </li>
+                    <li class="nav_menu_item">
+                        <a href="/store" class="nav_menu_link">Додатки</a>
+                    </li>
+                    <li class="nav_menu_item">
+                        {% if session.get('discord_user') %}
+                            <div class="user-panel">
+                                <span>{{ session['discord_user']['username'] }}</span>
+                                <div class="panel-dropdown">
+                                    <a href="{{ url_for('profile') }}">Кабінет</a>
+                                    <a href="{{ url_for('logout') }}">Вийти</a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <a href="{{ url_for('login') }}" class="btn view_more_btn">Увійти</a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+            <button class="toggle_btn" id="toggle_btn">
+                <i class="ri-menu-line"></i>
+            </button>
+        </nav>
+    </header>
+
+    <section class="wrapper">
+        <div class="container mt-5">
+            <h2>Редагування додатку</h2>
+            {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+            {% endif %}
+            <form method="POST" action="/edit_app/{{ app_data['id'] }}">
+                <div class="form-group">
+                    <label for="appName">Назва додатку-гри:</label>
+                    <input type="text" class="form-control" id="appName" name="appName" value="{{ app_data['app_name'] }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="appType">Тип додатку:</label>
+                    <select class="form-control" id="appType" name="appType">
+                        <option {% if app_data['app_type'] == 'Гра' %} selected {% endif %}>Гра</option>
+                        <option {% if app_data['app_type'] == 'Застосунок' %} selected {% endif %}>Застосунок</option>
+                    </select>
+                </div>            
+                <div class="form-group">
+                    <label for="shortDescription">Короткий опис:</label>
+                    <input type="text" class="form-control" id="shortDescription" name="shortDescription" value="{{ app_data['short_description'] }}">
+                </div>
+                <div class="form-group">
+                    <label for="description">Опис:</label>
+                    <textarea class="form-control" id="description" name="description" rows="3">{{ app_data['description'] }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Вікова категорія:</label><br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="ageAll" name="ageAll" value="allAges" {% if app_data['age_all'] %} checked {% endif %}>
+                        <label class="form-check-label" for="ageAll">Для всіх вікових груп</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="appStatus">Статус додатку:</label>
+                    <select class="form-control" id="appStatus" name="appStatus">
+                        <option {% if app_data['app_status'] == 'У розробці' %} selected {% endif %}>У розробці</option>
+                        <option {% if app_data['app_status'] == 'Бета' %} selected {% endif %}>Бета</option>
+                        <option {% if app_data['app_status'] == 'Стабільний режим' %} selected {% endif %}>Стабільний режим</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="appCategory">Категорія додатку:</label>
+                    <select class="form-control" id="appCategory" name="appCategory">
+                        <!-- Populate with your app categories dynamically -->
+                        {% for category in app_categories %}
+                            <option {% if app_data['app_category'] == category %} selected {% endif %}>{{ category }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="banner1">Додати 1 банер:</label>
+                    <input type="text" class="form-control" id="banner1" name="banner1" value="{{ app_data['banner1'] }}">
+                </div>
+                <div class="form-group">
+                    <label for="banner2">Додати 2 банер:</label>
+                    <input type="text" class="form-control" id="banner2" name="banner2" value="{{ app_data['banner2'] }}">
+                </div>
+                <div class="form-group">
+                    <label for="banner3">Додати 3 банер:</label>
+                    <input type="text" class="form-control" id="banner3" name="banner3" value="{{ app_data['banner3'] }}">
+                </div>
+                <div class="form-group">
+                    <label for="icon">Додати іконку додатку:</label>
+                    <input type="text" class="form-control" id="icon" name="icon" value="{{ app_data['icon'] }}">
+                </div>
+                <div class="form-group">
+                    <label for="os">Операційні системи для завантаження:</label><br>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="windows" name="os_windows" value="windows" {% if app_data['os_windows'] %} checked {% endif %}>
+                        <label class="form-check-label" for="windows">Windows</label>
+                        <input type="text" class="form-control" id="windowsLink" name="windowsLink" value="{{ app_data['windows_link'] }}">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="macos" name="os_macos" value="macos" {% if app_data['os_macos'] %} checked {% endif %}>
+                        <label class="form-check-label" for="macos">MacOS</label>
+                        <input type="text" class="form-control" id="macosLink" name="macosLink" value="{{ app_data['macos_link'] }}">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="linux" name="os_linux" value="linux" {% if app_data['os_linux'] %} checked {% endif %}>
+                        <label class="form-check-label" for="linux">Linux</label>
+                        <input type="text" class="form-control" id="linuxLink" name="linuxLink" value="{{ app_data['linux_link'] }}">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="ios" name="os_ios" value="ios" {% if app_data['os_ios'] %} checked {% endif %}>
+                        <label class="form-check-label" for="ios">iOS</label>
+                        <input type="text" class="form-control" id="iosLink" name="iosLink" value="{{ app_data['ios_link'] }}">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="android" name="os_android" value="android" {% if app_data['os_android'] %} checked {% endif %}>
+                        <label class="form-check-label" for="android">Android</label>
+                        <input type="text" class="form-control" id="androidLink" name="androidLink" value="{{ app_data['android_link'] }}">
+                    </div>
+                </div>
+                <div class="form-group mt-3"> 
+                    <button type="submit" class="btn btn-primary">Зберегти зміни</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/gsap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo1.png') }}" />
+  <title>WalletStore - Магазин додатків</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .panel {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .panel-header {
+      padding: 15px;
+      background-color: #007bff;
+      color: white;
+      border-bottom: 1px solid #ddd;
+      border-radius: 10px 10px 0 0;
+    }
+
+    .panel-body {
+      padding: 20px;
+      flex: 1;
+    }
+
+    .panel-header h3,
+    .panel-header h4 {
+      margin: 0;
+    }
+
+    .btn_wrapper {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 5px;
+      text-align: center;
+      flex: 1;
+      max-width: 200px;
+      transition: background-color 0.3s, transform 0.3s;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      .btn_wrapper {
+        flex-direction: column;
+      }
+
+      .panel {
+        max-width: 100%;
+      }
+    }
+
+    .user-panel {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .user-panel span {
+      padding: 10px;
+      background-color: #f1f1f1;
+      border-radius: 5px;
+    }
+
+    .panel-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: #fff;
+      box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+
+    .panel-dropdown a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .panel-dropdown a:hover {
+      background-color: #ddd;
+    }
+
+    .user-panel:hover .panel-dropdown {
+      display: block;
+    }
+
+    .container.mt-5 {
+      margin-top: 60px;
+    }
+
+    .profile-settings {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .table th, .table td {
+      border: 1px solid #ddd;
+      padding: 12px 15px;
+      text-align: left;
+    }
+
+    .table th {
+      background-color: #f4f4f9;
+    }
+
+    .table td {
+      background-color: #fff;
+    }
+
+    .table tr:hover td {
+      background-color: #f1f1f1;
+    }
+
+    .btn-table {
+      padding: 6px 12px;
+      font-size: 14px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+
+    .btn-table:hover {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+    }
+  </style>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet" />
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+</head>
+<body>
+  <header class="container header">
+    <nav class="nav">
+      <div class="logo">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" width="40" height="40" class="logo"/>
+        <h2>WalletStore</h2>
+      </div>
+
+      <div class="nav_menu" id="nav_menu">
+        <button class="close_btn" id="close_btn">
+          <i class="ri-close-fill"></i>
+        </button>
+
+        <ul class="nav_menu_list">
+          <li class="nav_menu_item">
+            <a href="/" class="nav_menu_link">Головна</a>
+          </li>
+          <li class="nav_menu_item">
+            <a href="https://docs.walletstore.github.io" class="nav_menu_link">Документація</a>
+          </li>
+          <li class="nav_menu_item">
+            <a href="/store" class="nav_menu_link">Додатки</a>
+          </li>
+          <li class="nav_menu_item">
+            {% if session.get('discord_user') %}
+                <div class="user-panel">
+                    <span>{{ session['discord_user']['username'] }}</span>
+                    <div class="panel-dropdown">
+                        <a href="{{ url_for('profile') }}">Кабінет</a>
+                        <a href="{{ url_for('logout') }}">Вийти</a>
+                    </div>
+                </div>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="btn view_more_btn">Увійти</a>
+            {% endif %}
+          </li>
+        </ul>
+      </div>
+
+      <button class="toggle_btn" id="toggle_btn">
+        <i class="ri-menu-line"></i>
+      </button>
+    </nav>
+  </header>
+
+  <div class="container mt-5">
+    <div class="profile-settings">
+      <div class="panel">
+        <div class="panel-header">
+          <h3>Профіль користувача</h3>
+        </div>
+        <div class="panel-body">
+          <p><strong>Ім'я користувача:</strong> {{ user['username'] }}</p>
+          <p><strong>Discord ID:</strong> {{ user['id'] }}</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h4>Додаткові налаштування</h4>
+        </div>
+        <div class="panel-body">
+          <div class="btn_wrapper">
+            <a href="/panel" class="btn">Додати програму</a>
+            <a href="/settings" class="btn">Налаштування</a>
+          </div>        
+        </div>
+      </div>
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Назва додатку</th>
+          <th>Статус</th>
+          <th>Детальніше</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for app in apps %}
+        <tr>
+          <td>{{ app.app_name }}</td>
+          <td>{{ app.status }}</td>
+          <td><a href="/edit_app/{{ session['discord_user']['id'] }}/{{ app.id }}" class="btn-table">Детальніше</a></td>
+        </tr>
+        {% endfor %}
+        
+      </tbody>
+    </table>
+  </div>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/gsap.min.js"></script>
+
+  <script>
+    document.getElementById('toggle_btn').addEventListener('click', function() {
+      document.getElementById('nav_menu').classList.toggle('active');
+    });
+
+    document.getElementById('close_btn').addEventListener('click', function() {
+      document.getElementById('nav_menu').classList.remove('active');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo1.png') }}" />
+    <title>WalletStore - Магазин додатків</title>
+    <style>
+
+        .btn_wrapper {
+            margin: 20px;
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+        }
+
+        @media (max-width: 768px) {
+            .btn_wrapper {
+                display: flex;
+                flex-direction: column; 
+            }
+        }
+
+        .user-panel {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .user-panel span {
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+        }
+
+        .panel-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #fff;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .panel-dropdown a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .panel-dropdown a:hover {
+            background-color: #ddd;
+        }
+
+        .user-panel:hover .panel-dropdown {
+            display: block;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f0f2f5;
+        }
+        .container-profile {
+            max-width: 940px;
+            margin: 20px auto;
+            background-color: #fff;
+            border: 1px solid #dddfe2;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,.1);
+            padding: 20px;
+        }
+        .profile-header {
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f2f5;
+            border-bottom: 1px solid #dddfe2;
+        }
+        .profile-header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .profile-banner {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+        }
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-top: -75px;
+            border: 5px solid #fff;
+            box-shadow: 0 0 0 1px rgba(0,0,0,.1);
+        }
+        .social-links a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #333;
+        }
+        .social-links a:hover {
+            text-decoration: underline;
+        }
+        .app-list {
+            margin-top: 20px;
+        }
+        .app-item {
+            border: 1px solid #dddfe2;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+</head>
+<body>
+    <header class="container header">
+        <nav class="nav">
+          <div class="logo">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" width="40" height="40" class="logo"/>
+            <h2>WalletStore</h2>
+          </div>
+    
+          <div class="nav_menu" id="nav_menu">
+            <button class="close_btn" id="close_btn">
+              <i class="ri-close-fill"></i>
+            </button>
+    
+            <ul class="nav_menu_list">
+              <li class="nav_menu_item">
+                <a href="/" class="nav_menu_link">Головна</a>
+              </li>
+              <li class="nav_menu_item">
+                <a href="https://docs.walletstore.github.io" class="nav_menu_link">Документація</a>
+              </li>
+              <li class="nav_menu_item">
+                <a href="/store" class="nav_menu_link">Додатки</a>
+              </li>
+              <li class="nav_menu_item">
+                {% if session.get('discord_user') %}
+                    <div class="user-panel">
+                        <span>{{ session['discord_user']['username'] }}</span>
+                        <div class="panel-dropdown">
+                            <a href="{{ url_for('profile') }}">Кабінет</a>
+                            <a href="{{ url_for('logout') }}">Вийти</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn view_more_btn">Увійти</a>
+                {% endif %}
+              </li>
+            </ul>
+          </div>
+    
+          <button class="toggle_btn" id="toggle_btn">
+            <i class="ri-menu-line"></i>
+          </button>
+        </nav>
+      </header>
+    <div class="container-profile">
+        <div class="profile-header">
+            <h1>{{ user_data.username }}</h1>
+        </div>
+        {% if user_data.banner %}
+        <img src="{{ url_for('static', filename='store/img/' ~ user_data.banner) }}" alt="Банер" class="profile-banner">
+        {% else %}
+        {% endif %}
+        <div class="text-center">
+            <img src="{% if user_data.icon %}{{ url_for('static', filename='store/img/' ~ user_data.icon) }}{% else %}{{ url_for('static', filename='store/img/' ~ DEFAULT_AVATAR) }}{% endif %}" alt="Іконка" class="profile-avatar">
+        </div>
+        <div class="social-links">
+            {% if user_data.website %}
+            <a href="{{ user_data.website }}" target="_blank"><i class="ri-global-line"></i> Website</a>
+            {% endif %}
+            {% if user_data.xcom %}
+            <a href="{{ user_data.xcom }}" target="_blank"><i class="ri-twitter-line"></i> Twitter</a>
+            {% endif %}
+            {% if user_data.mastodon %}
+            <a href="{{ user_data.mastodon }}" target="_blank"><i class="ri-mastodon-line"></i> Mastodon</a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
+

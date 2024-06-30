@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo1.png') }}" />
+    <title>WalletStore - Магазин додатків</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .st {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .app-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .app-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-right: 20px;
+        }
+        .app-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .app-info {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .app-info h1 {
+            margin: 0;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+        }
+        .app-info p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .app-description {
+            margin-bottom: 20px;
+        }
+        .app-description h2 {
+            margin-top: 0;
+        }
+        .app-os {
+            margin-bottom: 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007bff;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .btn_wrapper {
+            margin: 20px;
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%; 
+        }
+        .btn i {
+            margin-left: 10px;
+        }
+        .os_list {
+            margin-top: 20px;
+            display: none;
+        }
+        .os_list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .os_list li {
+            margin: 5px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .app-banners {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto; 
+            margin-bottom: 20px;
+        }
+        .banner {
+            flex: 0 0 auto; 
+            width: 33.33%; 
+            max-width: calc(33.33% - 10px); 
+            position: relative; 
+        }
+        .banner img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-panel {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .user-panel span {
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+        }
+        .panel-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #fff;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        .panel-dropdown a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        .panel-dropdown a:hover {
+            background-color: #ddd;
+        }
+        .user-panel:hover .panel-dropdown {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .app-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .app-icon {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            .app-info {
+                text-align: center;
+            }
+            .app-banners {
+                flex-wrap: wrap;
+                gap: 10px;
+                justify-content: center;
+            }
+            .banner {
+                width: 100%;
+                max-width: calc(100% - 10px); 
+            }
+        }
+
+        .skeleton {
+            background-color: #ddd;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        .skeleton::before {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 0;
+            left: -150%;
+            height: 100%;
+            width: 150%;
+            background: linear-gradient(to right, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
+            animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+            100% {
+                left: 100%;
+            }
+        }
+        .skeleton-img {
+            width: 100px;
+            height: 100px;
+            margin-right: 20px;
+        }
+        .skeleton-title {
+            width: 50%;
+            height: 20px;
+            margin-bottom: 10px;
+        }
+        .skeleton-text {
+            width: 80%;
+            height: 14px;
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+</head>
+<body>
+    <header class="container header">
+        <nav class="nav">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='img/logo1.png') }}" width="40" height="40" class="logo"/>
+                <h2>WalletStore</h2>
+            </div>
+            <div class="nav_menu" id="nav_menu">
+                <button class="close_btn" id="close_btn">
+                    <i class="ri-close-fill"></i>
+                </button>
+                <ul class="nav_menu_list">
+                    <li class="nav_menu_item">
+                        <a href="/" class="nav_menu_link">Головна</a>
+                    </li>
+                    <li class="nav_menu_item">
+                        <a href="/wiki" class="nav_menu_link">Документація</a>
+                    </li>
+                    <li class="nav_menu_item">
+                        <a href="/store" class="nav_menu_link">Додатки</a>
+                    </li>
+                    <li class="nav_menu_item">
+                        {% if session.get('discord_user') %}
+                            <div class="user-panel">
+                                <span>{{ session['discord_user']['username'] }}</span>
+                                <div class="panel-dropdown">
+                                    <a href="{{ url_for('profile') }}">Кабінет</a>
+                                    <a href="{{ url_for('logout') }}">Вийти</a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <a href="{{ url_for('login') }}" class="btn view_more_btn">Увійти</a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+            <button class="toggle_btn" id="toggle_btn">
+                <i class="ri-menu-line"></i>
+            </button>
+        </nav>
+    </header>
+    <div class="st">
+        <div class="app-header">
+            <div class="app-icon skeleton skeleton-img"></div>
+            <div class="app-info">
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text"></div>
+            </div>
+        </div>
+
+        <div class="app-banners">
+            <div class="banner skeleton skeleton-img"></div>
+            <div class="banner skeleton skeleton-img"></div>
+            <div class="banner skeleton skeleton-img"></div>
+        </div>
+
+        <div class="app-description">
+            <h2>Description</h2>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text"></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/gsap.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const appHeader = document.querySelector('.app-header');
+                const appBanners = document.querySelector('.app-banners');
+                const appDescription = document.querySelector('.app-description');
+
+                appHeader.innerHTML = `
+                    <div class="app-icon">
+                        {% if app_data.icon %}
+                            {% if app_data.icon.startswith('http') %}
+                                <img src="{{ app_data.icon }}" alt="App Icon">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='store/img/' ~ app_data.icon) }}" alt="App Icon">
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="app-info">
+                        <h1>{{ app_data.app_name }}</h1>
+                        <div class="app-details">
+                            <p><strong>Autor:</strong> <a href="{{ url_for('autor_profile', username=app_data['username']) }}">{{ app_data['username'] }}</a></p>
+                            <p><strong>Status:</strong> {{ app_data.app_status }}</p>
+                            <p><strong>Category:</strong> {{ app_data.app_category }}</p>
+                        </div>
+                    </div>
+                `;
+
+                appBanners.innerHTML = `
+                    {% if app_data.banner1 %}
+                        <div class="banner">
+                            {% if app_data.banner1.startswith('http') %}
+                                <img src="{{ app_data.banner1 }}" alt="Banner 1">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='store/img/' ~ app_data.banner1) }}" alt="Banner 1">
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    {% if app_data.banner2 %}
+                        <div class="banner">
+                            {% if app_data.banner2.startswith('http') %}
+                                <img src="{{ app_data.banner2 }}" alt="Banner 2">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='store/img/' ~ app_data.banner2) }}" alt="Banner 2">
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    {% if app_data.banner3 %}
+                        <div class="banner">
+                            {% if app_data.banner3.startswith('http') %}
+                                <img src="{{ app_data.banner3 }}" alt="Banner 3">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='store/img/' ~ app_data.banner3) }}" alt="Banner 3">
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                `;
+
+                appDescription.innerHTML = `
+                    <h2>Description</h2>
+                    <p>{{ app_data.description }}</p>
+                `;
+            }, 2000); 
+        });
+    </script>
+</body>
+</html>

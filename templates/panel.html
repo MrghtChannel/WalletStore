@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo1.png') }}" />
+    <title>WalletStore - Магазин додатків</title>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .btn_wrapper {
+            margin: 20px;
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+        }
+
+        .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%; 
+        }
+
+        .btn i {
+            margin-left: 10px;
+        }
+
+        .os_list {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .os_list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .os_list li {
+            margin: 5px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .btn_wrapper {
+                display: flex;
+                flex-direction: column; 
+            }
+        }
+
+        .user-panel {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .user-panel span {
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+        }
+
+        .panel-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #fff;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .panel-dropdown a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .panel-dropdown a:hover {
+            background-color: #ddd;
+        }
+
+        .user-panel:hover .panel-dropdown {
+            display: block;
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet" />
+
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+</head>
+<body>
+    <header class="container header">
+
+        <nav class="nav">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='img/logo1.png') }}" width="40" height="40" class="logo"/>
+                <h2>WalletStore</h2>
+            </div>
+            <div class="nav_menu" id="nav_menu">
+                <button class="close_btn" id="close_btn">
+                    <i class="ri-close-fill"></i>
+                </button>
+                <ul class="nav_menu_list">
+                    <li class="nav_menu_item">
+                        <a href="/" class="nav_menu_link">Головна</a>
+                    </li>
+                    <li class="nav_menu_item">
+                        <a href="/wiki" class="nav_menu_link">Документація</a>
+                    </li>
+                    <li class="nav_menu_item">
+                        <a href="/store" class="nav_menu_link">Додатки</a>
+                    </li>
+                    <li class="nav_menu_item">
+                        {% if session.get('discord_user') %}
+                            <div class="user-panel">
+                                <span>{{ session['discord_user']['username'] }}</span>
+                                <div class="panel-dropdown">
+                                    <a href="{{ url_for('profile') }}">Кабінет</a>
+                                    <a href="{{ url_for('logout') }}">Вийти</a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <a href="{{ url_for('login') }}" class="btn view_more_btn">Увійти</a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+            <button class="toggle_btn" id="toggle_btn">
+                <i class="ri-menu-line"></i>
+            </button>
+        </nav>
+    </header>
+
+    <section class="wrapper">
+        <div class="container mt-5">
+            <h2>Додати новий додаток - гру</h2>
+            {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+            {% endif %}
+            <form method="POST" action="/add_app">
+                <div class="form-group">
+                    <label for="appName">Назва додатку-гри:</label>
+                    <input type="text" class="form-control" id="appName" name="appName" placeholder="Введіть назву">
+                </div>
+                <div class="form-group">
+                    <label for="appType">Тип додатку:</label>
+                    <select class="form-control" id="appType" name="appType">
+                        <option>Гра</option>
+                        <option>Застосунок</option>
+                    </select>
+                </div>            
+                <div class="form-group">
+                    <label for="shortDescription">Короткий опис:</label>
+                    <input type="text" class="form-control" id="shortDescription" name="shortDescription" placeholder="Введіть короткий опис">
+                </div>
+                <div class="form-group">
+                    <label for="description">Опис:</label>
+                    <textarea class="form-control" id="description" name="description" rows="3" placeholder="Введіть детальний опис"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Вікова категорія:</label><br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="ageAll" name="ageAll" value="allAges">
+                        <label class="form-check-label" for="ageAll">Для всіх вікових груп</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="ageChildren" name="ageChildren" value="children">
+                        <label class="form-check-label" for="ageChildren">Для дітей</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="ageTeens" name="ageTeens" value="teens">
+                        <label class="form-check-label" for="ageTeens">Для підлітків</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="ageAdults" name="ageAdults" value="adults">
+                        <label class="form-check-label" for="ageAdults">Для дорослих</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="appStatus">Статус додатку:</label>
+                    <select class="form-control" id="appStatus" name="appStatus">
+                        <option>У розробці</option>
+                        <option>Бета</option>
+                        <option>Стабільний режим</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="appType">Тип додатку:</label>
+                    <select class="form-control" id="appType" name="appType">
+                        <option>Фінанси</option>
+                        <option>Державні</option>
+                        <option>Корисні інструменти</option>
+                        <option>Транспорт і навігація</option>
+                        <option>Покупки</option>
+                        <option>Комунікація</option>
+                        <option>Розваги</option>
+                        <option>Оголошення та сервіси</option>
+                        <option>Їжа і напої</option>
+                        <option>Бізнес-сервіси</option>
+                        <option>Здоров'я</option>
+                        <option>Подорожі</option>
+                        <option>Освіта</option>
+                        <option>Книги</option>
+                        <option>Стиль життя</option>
+                        <option>Спорт</option>
+                        <option>Новини і події</option>
+                        <option>Батькам</option>
+                        <option>Тварини</option>
+                        <option>Ставки і лотереї</option>
+                        <option>Мистецтво і дизайн</option>
+                        <option>Музика і аудіо</option>
+                        <option>Фотографія</option>
+                        <option>Відео</option>
+                        <option>Погода</option>
+                        <option>Ефективність</option>
+                        <option>Соціальні мережі</option>
+                        <option>Краса</option>
+                        <option>Інше</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="banner1">Додати 1 банер:</label>
+                    <input type="text" class="form-control" id="banner1" name="banner1" placeholder="Посилання на банер 1">
+                </div>
+                <div class="form-group">
+                    <label for="banner2">Додати 2 банер:</label>
+                    <input type="text" class="form-control" id="banner2" name="banner2" placeholder="Посилання на банер 2">
+                </div>
+                <div class="form-group">
+                    <label for="banner3">Додати 3 банер:</label>
+                    <input type="text" class="form-control" id="banner3" name="banner3" placeholder="Посилання на банер 3">
+                </div>
+                <div class="form-group">
+                    <label for="icon">Додати іконку додатку:</label>
+                    <input type="text" class="form-control" id="icon" name="icon" placeholder="Посилання на іконку">
+                </div>
+                <div class="form-group">
+                    <label for="os">Операційні системи для завантаження:</label><br>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="windows" name="windows" value="Windows">
+                        <label class="form-check-label" for="windows">Windows</label>
+                        <input type="text" class="form-control" id="windowsLink" name="windowsLink" placeholder="Посилання для Windows">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="macos" name="macos" value="MacOS">
+                        <label class="form-check-label" for="macos">MacOS</label>
+                        <input type="text" class="form-control" id="macosLink" name="macosLink" placeholder="Посилання для MacOS">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="linux" name="linux" value="Linux">
+                        <label class="form-check-label" for="linux">Linux</label>
+                        <input type="text" class="form-control" id="linuxLink" name="linuxLink" placeholder="Посилання для Linux">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="ios" name="ios" value="iOS">
+                        <label class="form-check-label" for="ios">iOS</label>
+                        <input type="text" class="form-control" id="iosLink" name="iosLink" placeholder="Посилання для iOS">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="android" name="android" value="Android">
+                        <label class="form-check-label" for="android">Android</label>
+                        <input type="text" class="form-control" id="androidLink" name="androidLink" placeholder="Посилання для Android">
+                    </div>
+                    <div class="form-group mt-3"> 
+                        <button type="submit" class="btn btn-primary">Опублікувати</button>
+                    </div>
+            </form>
+        </div>
+    </section>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/gsap.min.js"></script>
+</body>
+</html>
